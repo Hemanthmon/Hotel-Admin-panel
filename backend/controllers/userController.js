@@ -120,6 +120,6 @@ export const loginUser = async (req, res) => {
       });
     } catch (error) {
       console.error("Error in loginUser:", error.message);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(500).json({ success: false, message: "Error in loginUser" });
     }
   };

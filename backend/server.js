@@ -8,7 +8,7 @@ import userRoutes from './routes/userRoutes.js';
 import amenityRoutes from './routes/amenityRoutes.js';
 import connectCloudinary from './config/cloudinary.js';
 import propertyRoutes from './routes/propertyRoutes.js';
-
+import partnerRoutes from './routes/partnerRoutes.js';
 //load environment variables
 dotenv.config();
 //connect to mongodb
@@ -33,6 +33,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/amenities', amenityRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/partners', partnerRoutes);
 //Root route
 app.get('/',(req, res) =>{
     res.send('API is running successfully')
