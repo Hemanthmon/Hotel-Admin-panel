@@ -17,7 +17,11 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    total_amount: Number,
+    total_amount: {
+        type: Number,
+        required: true,
+        min: 0
+      },
     payement_status: {
         type: String,
         enum: ["pending", "completed", "failed"],
@@ -28,6 +32,16 @@ const bookingSchema = new mongoose.Schema({
         enum: ["confirmed", "cancelled", "completed", "pending"],
         default: "confirmed",
     },
+    special_requests: {
+        type: String,
+        default: ''
+      },
+      guests: {
+        type: Number,
+        default: 1,
+        min: 1
+      }
 },  { timestamps: true })
 const Booking  = mongoose.model("Booking", bookingSchema);
+
 export default Booking;
