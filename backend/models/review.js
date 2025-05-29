@@ -1,44 +1,33 @@
 import mongoose from "mongoose";
 
-const bookingSchema = new mongoose.SchemaType({
-    user_id: {
+const reviewSchema = new mongoose.Schema({
+    user_id : {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-    property_id: {
+    product_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Property",
+        ref: "Product",
         required: true
     },
-    check_in_date: {
-        type: Date,
-        required: true
-    },
-    check_out_date: {
-        type: Date,
-        required: true
-    },
-    total_amount: {
+    rating: {
         type: Number,
-        required: true
+        required: true,
+        min: 1,
+        max: 5
     },
-    payment_status: {
+    Comment: {
         type: String,
-        enum: ["pending", "completed", "failed"],
-        default: "pending"
+        required: true,
+        trim: true,
+        maxlength: 500
     },
-    booking_status: {
-        type: String,
-        enum: ["confirmed", "cancelled", "completed", "pending"],
-        default: "confirmed"
+    created_at: {
+        type: Date,
+        default: Date.now,
     },
-    special_requests: {
-        type: String,
-        default: ""
-    },
-    guests: {
-        type: Number,
-        default: 1,
-    },
-})
+}, { timestamps: true });
+
+const Review = mongoose.model("Review", reviewSchema);
+export default Review;
