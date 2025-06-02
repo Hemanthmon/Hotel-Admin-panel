@@ -13,7 +13,15 @@ const razorpay = new Razorpay({
 //Step 1: Create Razorpay order
 export const createOrder = async (req, res) => {
     try {
-        const { amount, currency = "INR", booking_id } = req.body;
+        const { amount, 
+            currency = "INR",
+             booking_id } = req.body;
+
+        const booking = await Booking.findById(booking_id);
+        if (!booking || booking.total_amount !== amount) {
+            return res.status(400).json({ success: false, message: "Invalid booking or amount mismatch" });
+        }
+
 
         const options = {
             amount: amount * 100, // Amount in paise
@@ -32,7 +40,7 @@ export const createOrder = async (req, res) => {
     } catch (error) {
         console.error("Error creating Razorpay order:", error);
         res.status(500).json({ success: false, message: "Payment order creation failed" });
-        
+
     }
 }
 
@@ -47,10 +55,15 @@ export const verifyPayment = async (req, res) => {
             user_id,
             amount,
         } = req.body;
-    const generated_signature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-    .digest('hex');
+        const booking = await Booking.findById(booking_id);
+        if (!booking || booking.total_amount !== amount) {
+            return res.status(400).json({ success: false, message: "Invalid booking or amount mismatch" });
+        }
+
+        const generated_signature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest('hex');
 
         if (generated_signature !== razorpay_signature) {
             return res.status(400).json({ success: false, message: "Invalid signature" });
@@ -67,10 +80,54 @@ export const verifyPayment = async (req, res) => {
         });
 
         await payment.save();
-
+        await Booking.findByIdAndUpdate(booking_id, { payment_status: 'completed' });
         res.status(200).json({ success: true, message: "Payment verified successfully", payment });
     } catch (error) {
         console.error("Error verifying payment:", error);
         res.status(500).json({ success: false, message: "Payment verification failed" });
     }
 }
+
+// get the pending payments 
+
+export const getPendingPayments = async (req, res) => {
+    try {
+      const payments = await Payment.find({
+        user_id: req.user._id,
+        payment_status: 'pending',
+      }).populate('booking_id');
+      
+      res.status(200).json({ success: true, payments });
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Error fetching pending payments' });
+    }
+  };
+
+  // get the completed payments
+  export const getCompletedPayments = async (req, res) => {
+    try {
+      const payments = await Payment.find({
+        user_id: req.user._id,
+        payment_status: 'success',
+      }).populate('booking_id');
+      
+      res.status(200).json({ success: true, payments });
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Error fetching completed payments' });
+    }
+  };
+
+
+// ✅ Get Failed Payments
+export const getFailedPayments = async (req, res) => {
+    try {
+      const payments = await Payment.find({
+        user_id: req.user._id,
+        payment_status: 'failed',
+      }).populate('booking_id');
+      
+      res.status(200).json({ success: true, payments });
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Error fetching failed payments' });
+    }
+  };

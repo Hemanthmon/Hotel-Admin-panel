@@ -79,3 +79,44 @@ export const createBooking = async (req, res) => {
     res.status(500).json({ success: false, message: "Something went wrong.", error: error.message });
   }
 };
+// ✅ Get Pending Bookings
+export const getPendingBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      user_id: req.user._id,
+      payment_status: 'pending',
+    }).populate('property_id');
+    
+    res.status(200).json({ success: true, bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Error fetching pending bookings' });
+  }
+};
+
+// ✅ Get Completed Bookings
+export const getCompletedBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      user_id: req.user._id,
+      payment_status: 'completed',
+    }).populate('property_id');
+
+    res.status(200).json({ success: true, bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Error fetching completed bookings' });
+  }
+};
+
+// ✅ Get Cancelled Bookings
+export const getCancelledBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      user_id: req.user._id,
+      booking_status: 'cancelled',
+    }).populate('property_id');
+
+    res.status(200).json({ success: true, bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Error fetching cancelled bookings' });
+  }
+};
