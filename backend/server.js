@@ -13,6 +13,8 @@ import propertyRoutes from './routes/propertyRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js'; 
+
 //load environment variables
 dotenv.config();
 //connect to mongodb
@@ -54,6 +56,8 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/bookings", bookingRoutes); 
+
 //Root route
 app.get('/',(req, res) =>{
     res.send('API is running successfully')
