@@ -42,7 +42,11 @@ const propertySchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
-      
+      is_approved: {
+        type: Boolean,
+        default: false, // initially not approved
+      },
+
 },  { timestamps: true });
 
 const Property = mongoose.model("Property", propertySchema);
