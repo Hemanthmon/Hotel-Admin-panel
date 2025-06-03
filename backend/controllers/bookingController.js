@@ -18,6 +18,21 @@ export const createBooking = async (req, res) => {
       return res.status(404).json({ success: false, message: "Property not found." });
     }
 
+    if (property.requires_enquiry) {
+      const approvedEnquiry = await Enquiry.findOne({
+        user_id,
+        property_id,
+        check_in_date,
+        check_out_date,
+        status: 'approved'
+      });
+    
+      if (!approvedEnquiry) {
+        return res.status(403).json({ success: false, message: "You need approval to book this property." });
+      }
+    }
+    
+
     // ✅ Step 3: Check availability
     const checkIn = new Date(check_in_date);
     const checkOut = new Date(check_out_date);

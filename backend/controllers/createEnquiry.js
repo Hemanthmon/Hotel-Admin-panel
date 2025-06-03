@@ -1,7 +1,7 @@
 import Enquiry from "../models/enquiry.js";
 import Property from "../models/property.js";
 
-const createEnquiry = async (req, res) => {
+export const createEnquiry = async (req, res) => {
     try {
         const { property_id, check_in_date, check_out_date, message } = req.body;
         const user_id = req.user._id; // assuming user is authenticated via middleware
