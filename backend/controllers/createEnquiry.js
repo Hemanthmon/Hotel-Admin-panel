@@ -30,3 +30,22 @@ const createEnquiry = async (req, res) => {
 
 
 //respond to the enquiry
+export const respondToEnquiry = async (req, res) => {
+    try{
+        const { enquiry_id } = req.params;
+        const { action } = req.body; // 'approve' or 'reject'
+
+        const enquiry = await Enquiry.findById(enquiry_id);
+        if (!enquiry) {
+            return res.status(404).json({ success: false, message: "Enquiry not found." });
+        }
+
+        enquiry.status = action === 'approve' ? 'confirmed' : 'cancelled';
+        await enquiry.save();
+
+        res.status(200).json({ success: true, message: `Enquiry ${action}d successfully`, enquiry });
+    }catch(error) {
+        console.error("Error responding to enquiry:", error);
+        res.status(500).json({ success: false, message: "Error responding to enquiry", error: error.message });
+    }
+}
