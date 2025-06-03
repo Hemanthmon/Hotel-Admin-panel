@@ -38,6 +38,11 @@ const propertySchema = new mongoose.Schema({
         ],
         default: [],
       },
+      requires_enquiry: {
+        type: Boolean,
+        default: false,
+      },
+      
 },  { timestamps: true });
 
 const Property = mongoose.model("Property", propertySchema);
