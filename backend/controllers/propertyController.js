@@ -85,3 +85,52 @@ export const createProperty = async (req, res) => {
       
     }
 }
+
+export const getPendingProperties = async (req, res) => {
+    try {
+        const properties = await Property.find({ is_approved: false });
+        res.status(200).json({
+            success: true,
+            properties,
+        });
+    } catch (error) {
+        console.error("Error fetching pending properties:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching pending properties",
+            error: error.message
+        });
+    }
+}
+
+export const approveProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const property = await Property.findByIdAndUpdate(
+      id, 
+      { is_approved: true }, 
+      { new: true, runValidators: true }
+    );
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+    res.status(200).json({ success: true, message: 'Property approved successfully', property });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error approving property' });
+  }
+}
+//function to g
+export const getAllProperties = async (req, res) => {
+  try {
+    const properties = await Property.find().populate('amenities'); // optionally populate other refs
+    
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      properties,
+    });
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
