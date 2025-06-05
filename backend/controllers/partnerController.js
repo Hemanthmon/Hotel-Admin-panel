@@ -123,3 +123,43 @@ export const loginPartner = async (req, res) => {
 };
 
 
+
+export const uploadDocument = async (req, res) => {
+  try {
+    const partnerId = req.user._id; // Assuming partner is authenticated
+    const { documentType } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded." });
+    }
+
+    const documentUrl = req.file.path;
+
+    const update = {};
+
+  
+    if (documentType === 'aadhaar') {
+      update['documents.aadhaar'] = documentUrl;
+    } else if (documentType === 'pan') {
+      update['documents.pan'] = documentUrl;
+    } else {
+      update.$push = { 'documents.other_docs': documentUrl };
+    }
+
+    const updatedPartner = await Partner.findByIdAndUpdate(
+      partnerId,
+      update,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `${documentType} uploaded successfully.`,
+      documents: updatedPartner.documents,
+    });
+
+  } catch (error) {
+    console.error("Upload Error:", error);
+    res.status(500).json({ success: false, message: "Upload failed", error: error.message });
+  }
+};
